@@ -1,0 +1,4 @@
+interface:
+  display_name: "Multica AI 软件工厂质量验证"
+  short_description: "针对固定候选版本和批准验收标准执行独立且可复现的质量验证"
+  default_prompt: "使用 $multica-ai-factory-qa 按已批准验收标准验证固定候选版本，并报告 PASS 或 FAIL。"

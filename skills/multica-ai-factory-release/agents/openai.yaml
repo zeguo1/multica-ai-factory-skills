@@ -1,0 +1,4 @@
+interface:
+  display_name: "Multica AI 软件工厂发布"
+  short_description: "部署并验证获得明确授权的固定候选版本、迁移步骤、监控与回滚准备"
+  default_prompt: "使用 $multica-ai-factory-release 将已授权固定候选版本部署到指定环境，并记录验证和回滚证据。"

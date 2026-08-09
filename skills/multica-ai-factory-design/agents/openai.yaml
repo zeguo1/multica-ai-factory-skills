@@ -1,0 +1,4 @@
+interface:
+  display_name: "Multica AI 软件工厂设计"
+  short_description: "创建可开发、可验证、可审计的 UX 与 UI 设计基线"
+  default_prompt: "使用 $multica-ai-factory-design 完成这个已就绪的设计 Issue，并提交可审计的 UX/UI 基线。"

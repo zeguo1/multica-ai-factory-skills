@@ -1,0 +1,4 @@
+interface:
+  display_name: "Multica AI 软件工厂开发执行"
+  short_description: "在已批准范围和仓库规则内安全实现、测试并交付开发 Issue"
+  default_prompt: "使用 $multica-ai-factory-execution 实现这个已就绪的开发 Issue，完成验证并停在 in_review。"

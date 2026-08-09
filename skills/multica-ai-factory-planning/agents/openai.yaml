@@ -1,0 +1,4 @@
+interface:
+  display_name: "Multica AI 软件工厂规划"
+  short_description: "基于仓库证据编制受治理的规划基线、实施方案与分阶段任务图"
+  default_prompt: "使用 $multica-ai-factory-planning 执行这个已就绪的规划 Issue，并提交基线和分阶段 Issue 草案供评审。"
