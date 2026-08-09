@@ -1,6 +1,6 @@
 ---
 name: multica-ai-factory-orchestrator
-description: 在 Multica 中协调受治理的软件工厂需求和分阶段 Issue 交接。适用于讨论新需求、变更、缺陷、架构或运维事项；负责父 Issue 的分类、决定记录、子 Issue 创建、任务类型路由、依赖检查和阶段推进；以及判断下一步应该做什么。不得编写正式基线、实现代码、执行 QA 或审计，也不得把 Multica Task/Run 完成当作 Issue 完成。
+description: 在 Multica 中协调受治理的软件工厂需求和分阶段 Issue 交接。适用于讨论新需求、变更、缺陷、架构或运维事项；负责父 Issue 的分类、决定记录、子 Issue 创建、任务类型路由、结构化依赖软门禁、循环检查和阶段推进；以及判断下一步应该做什么。不得编写正式基线、实现代码、执行 QA 或审计，也不得把 Multica Task/Run 完成当作 Issue 完成。
 ---
 
 # Multica AI 软件工厂编排
@@ -58,17 +58,21 @@ description: 在 Multica 中协调受治理的软件工厂需求和分阶段 Iss
 
 当前允许执行的子 Issue 使用 `todo`；未来阶段一律 `backlog`。创建 `todo` 且已分配 Agent 会立即触发执行，创建前必须完成就绪检查。
 
-Issue 必须使用契约字段，不在规划 Issue 中预设未经仓库调查的实现细节。
+Issue 必须使用契约字段。每条前置依赖写成“Issue key/文档、必需状态/版本、`hard` 类型、满足证据”，无依赖时明确写“无”。不得只用 Stage 推断依赖，也不在规划 Issue 中预设未经仓库调查的实现细节。
+
+当前平台不自动强制 Issue 依赖。Issue 正文是权威来源；编排 Agent 必须把依赖软门禁当作 Ready 的必要条件，不调用或假设不存在的硬依赖 API。
 
 ## 协调阶段
 
 被阶段完成事件唤醒时：
 
 1. 读取父 Issue 和 `multica issue children` 结果。
-2. 核对已完成子 Issue 的证据、QA / Audit / 人工门禁和候选版本。
-3. 核对下一阶段每个子 Issue 的显式依赖与已批准输入。
-4. 只提升满足条件的子 Issue到 `todo`；其余保持 `backlog` 并评论说明。
-5. 不因 Task/Run `completed` 或成员首次派活就把父 Issue 设为 `in_review`。
+2. 读取相关子 Issue 的正文、属性、评论和证据，不能只看 Stage 或终态数量。
+3. 形成“下游 Issue → 前置依赖 → 必需状态/版本 → 当前证据 → 结论”的依赖矩阵，检查无自依赖、无循环、无缺失节点和未说明的跨 Project/工作区关系。
+4. 核对已完成子 Issue 的证据、QA / Audit / 人工门禁和候选版本；`cancelled` 默认不满足要求为 `done` 的依赖。
+5. 只把全部 `hard` 依赖满足或具有合规人工豁免的 Issue 提升为 `todo`；其余保持 `backlog` 并评论说明。已经开始后发现依赖失效时设为 `blocked`。
+6. 豁免必须包含批准人、理由、批准时间、影响范围、替代控制和证据链接；不得自行批准豁免。
+7. 不因 Task/Run `completed`、Stage 关闭或成员首次派活就把父 Issue 设为 `in_review`。
 
 整体目标达到且适用门禁齐备后，把父 Issue 推进到 `in_review`，交给人工或授权门禁执行者；不自行设置为 `done`。
 
@@ -91,4 +95,5 @@ Issue 协调阶段输出：
 - Project、仓库、父 Issue 或目标范围不唯一；
 - 高风险数据、付款、合规或生产操作缺少人工决定；
 - 需要的平台属性、权限或资源不存在；
+- 依赖节点缺失、形成循环、状态/版本矛盾或必需豁免证据不完整；
 - 用户只要求分析，未授权工作区写入。
