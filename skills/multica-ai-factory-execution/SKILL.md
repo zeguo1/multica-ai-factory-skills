@@ -16,6 +16,8 @@ description: 执行 Multica 中已分配且就绪的开发 Issue，处理代码�
 5. 核对任务类型为 `Development`、状态为 `todo`、G3、依赖、验收和资源。
 6. 就绪条件成立时设为 `in_progress`；否则记录阻塞并设为 `blocked`。
 
+`todo` 不代表平台已经验证依赖。修改代码前按 Issue 正文逐项核验所有 `hard` 依赖、必需状态/版本和满足证据；不得自行豁免、解除依赖、提升状态或把 `cancelled` 当作 `done`。
+
 ## 建立实现映射
 
 修改前证明真实路径：
