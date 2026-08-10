@@ -1,6 +1,6 @@
 ---
 name: multica-ai-factory-planning
-description: 在 Multica 中执行受治理的规划 Issue，包括仓库调查、现状分析、PRD 或架构编写与修订、ADR、影响分析、缺陷诊断、实施规划、文档地图、阶段任务图，以及下游设计、开发、QA、审计或发布 Issue 草案。仅用于已分配且就绪的规划 Issue 或明确的规划请求。完成后停在 in_review，不实现生产代码，也不批准自己的基线。
+description: 在 Multica 中执行受治理的规划 Issue，包括仓库调查、现状分析、PRD 或架构编写与修订、ADR、影响分析、缺陷诊断、实施规划、文档地图、阶段任务图和下游 Issue 草案。仅用于已分配且就绪的规划 Issue。完成后固定候选、停在 in_review，并在自治模式下 mention 编排 Agent 自动启动独立规划审计；不实现生产代码，也不批准自己的基线。
 ---
 
 # Multica AI 软件工厂规划
@@ -14,6 +14,7 @@ description: 在 Multica 中执行受治理的规划 Issue，包括仓库调查�
 3. 读取仓库原生智能体指令、文档地图、相关代码、测试、数据、接口和近期变更。
 4. 核对任务类型为 `Planning`、状态为 `todo`、负责人、依赖、已批准输入和验收。
 5. 就绪条件成立时设为 `in_progress`；否则记录阻塞并设为 `blocked`。
+6. 读取“自动推进”章节；`autonomous` 模式必须能够识别协调父 Issue 和编排 Agent。
 
 `todo` 不代表平台已经验证依赖。开始产出前按 Issue 正文逐项核验所有 `hard` 依赖；不得自行豁免、解除依赖或把 `cancelled` 当作 `done`。
 
@@ -77,14 +78,15 @@ description: 在 Multica 中执行受治理的规划 Issue，包括仓库调查�
 5. 下游 Issue 默认 `backlog`；只有当前获准阶段且完全就绪时才可设为 `todo`。
 6. 声明 Issue 正文为当前依赖权威来源、Stage 仅为分组和唤醒；不得假设平台存在自动硬依赖门禁。
 
-创建/更新下游 Issue 是写操作，必须由当前规划 Issue 或人明确授权。
+创建/更新下游 Issue 是写操作，必须由当前规划 Issue、人或采用 `autonomous` 的协调父 Issue 明确授权。
 
 ## 交付
 
 - 核对需求—设计—架构—Issue—测试的双向追溯。
 - 记录产物路径、版本、调查证据、验证结果、风险和未决决定。
-- 将规划 Issue 设为 `in_review`。
-- 指明需要的需求、架构或任务拆解审计和人工批准。
+- 先发布最终交付评论，再将规划 Issue 设为 `in_review`。
+- `autonomous` 模式下，在最终评论中 mention 协调编排 Agent，指明需要启动的需求、架构或任务拆解 Audit、固定候选、PASS/FAIL 路径，并标记“是否需要人工操作”。
+- 只有确实存在业务选择、重大架构取舍、数据/合规决定或风险接受时才标记需要人工操作；不得把例行规划评审推给人。
 - 不实现生产代码，不把自身 Issue 设为 `done`。
 
 ## 输出
@@ -95,4 +97,4 @@ description: 在 Multica 中执行受治理的规划 Issue，包括仓库调查�
 4. ADR 和关键取舍；
 5. 阶段任务图、显式依赖与下游 Issue；
 6. 验证、风险、未决业务决定；
-7. 建议状态和下一门禁。
+7. 建议状态、下一门禁、编排 Agent mention 和是否需要人工操作。
