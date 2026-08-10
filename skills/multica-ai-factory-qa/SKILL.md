@@ -1,6 +1,6 @@
 ---
 name: multica-ai-factory-qa
-description: 针对固定候选版本和已批准验收标准，为 Multica 中已分配且就绪的 QA Issue 执行独立质量验证，包括功能、API、集成、回归、端到端、数据迁移、视觉、可访问性、兼容性、性能、安全或发布候选检查。输出可复现的 PASS/FAIL 证据并停在 in_review。不得修改实现、替代审计、接受风险、执行发布或把开发 Issue 设为 done。
+description: 针对固定候选版本和批准验收标准，为 Multica 中已分配且就绪的 QA Issue 执行独立质量验证，包括功能、API、集成、回归、端到端、数据迁移、视觉、可访问性、兼容性、性能、安全或发布候选检查。输出可复现的 PASS/FAIL，停在 in_review，并在自治模式下 mention 编排 Agent 自动放行或退回整改。不得修改实现、替代审计、接受风险、执行发布或把开发 Issue 设为 done。
 ---
 
 # Multica AI 软件工厂 QA
@@ -14,6 +14,7 @@ description: 针对固定候选版本和已批准验收标准，为 Multica 中�
 3. 固定候选 Commit/PR/构建/环境，确认数据、账号、权限、环境健康和验收标准。
 4. 核对任务类型为 `QA`、状态为 `todo`、依赖和候选唯一性。
 5. 就绪条件成立时设为 `in_progress`；候选漂移或环境不可用时记录阻塞并设为 `blocked`。
+6. 读取“自动推进”章节；`autonomous` 模式必须能够识别协调父 Issue 和编排 Agent。
 
 `todo` 不代表平台已经验证依赖。开始测试前按 Issue 正文逐项核验所有 `hard` 依赖及证据；不得自行豁免、解除依赖、提升状态或把 `cancelled` 当作 `done`。
 
@@ -46,7 +47,7 @@ description: 针对固定候选版本和已批准验收标准，为 Multica 中�
 - `PASS`：全部强制验收项通过，候选和环境可信，无阻断缺陷。
 - `FAIL`：任一强制项失败、关键范围未测或证据不足。
 
-若工作区存在“QA 结论”属性，写入 PASS / FAIL；同时发布结构化结果评论。将 QA Issue 设为 `in_review`，等待门禁执行者确认。不要把开发 Issue 修改为 `done`。
+若工作区存在“QA 结论”属性，写入 PASS / FAIL。先发布结构化结果评论，再将 QA Issue 设为 `in_review`。`autonomous` 模式在评论中 mention 编排 Agent，并注明固定候选、PASS/FAIL、整改责任人和是否需要人工操作；由编排 Agent 关闭门禁或退回原开发角色。不要把开发 Issue 修改为 `done`。
 
 ## 输出
 
@@ -67,5 +68,5 @@ PASS / FAIL
 - 项目 / 原因 / 影响
 
 ## 下一门禁
-- 审计、整改或批准
+- 编排 Agent / 审计 / 原开发角色；是否需要人工操作
 ```

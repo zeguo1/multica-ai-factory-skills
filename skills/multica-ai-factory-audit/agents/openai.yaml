@@ -1,4 +1,4 @@
 interface:
   display_name: "Multica AI 软件工厂审计"
   short_description: "依据批准基线、Issue 范围和仓库规则独立审计固定版本交付物与证据"
-  default_prompt: "使用 $multica-ai-factory-audit 独立审计这个固定候选版本，并给出可复现的 PASS 或 FAIL。"
+  default_prompt: "使用 $multica-ai-factory-audit 独立审计固定候选，给出 PASS/FAIL 并通知编排 Agent 自动放行或退回整改。"

@@ -1,6 +1,6 @@
 ---
 name: multica-ai-factory-design
-description: 为 Multica 中已分配且就绪的设计 Issue 创建或修订受治理的 UX/UI 基线，包括用户流、信息架构、完整页面状态、响应式行为、可访问性、设计系统、组件规格、视觉方向、Figma 交付以及 UX 与架构一致性。完成后停在 in_review；不得改变已批准产品规则、实现生产 UI 代码或批准自己的设计。
+description: 为 Multica 中已分配且就绪的设计 Issue 创建或修订受治理的 UX/UI 基线，包括用户流、信息架构、完整页面状态、响应式行为、可访问性、设计系统、组件规格、视觉方向、Figma 交付以及 UX 与架构一致性。完成后停在 in_review，并在自治模式下 mention 编排 Agent 自动启动 UX Audit；不得改变已批准产品规则、实现生产 UI 代码或批准自己的设计。
 ---
 
 # Multica AI 软件工厂设计
@@ -13,6 +13,7 @@ description: 为 Multica 中已分配且就绪的设计 Issue 创建或修订受
 2. 读取设计 Issue、父 Issue、Project、已批准 PRD、架构约束、现有设计系统、前端实现和 Figma。
 3. 核对任务类型为 `Design`、状态为 `todo`、依赖、目标终端、品牌资产、工具权限和验收。
 4. 就绪条件成立时设为 `in_progress`；否则记录阻塞并设为 `blocked`。
+5. 读取“自动推进”章节；`autonomous` 模式必须能够识别协调父 Issue 和编排 Agent。
 
 `todo` 不代表平台已经验证依赖。开始设计前按 Issue 正文逐项核验所有 `hard` 依赖及证据；不得自行豁免、解除依赖、提升状态或把 `cancelled` 当作 `done`。
 
@@ -53,8 +54,9 @@ Figma 工具不可用时可以先完成 Markdown 规格；Issue 明确要求 Fig
 ## 交付
 
 - 记录设计产物、版本、Figma 节点、状态覆盖和一致性结论。
-- 将设计 Issue 设为 `in_review`。
-- 指明 UX 审计、交叉一致性和人工视觉/关键交互批准。
+- 先发布最终交付评论，再将设计 Issue 设为 `in_review`。
+- `autonomous` 模式在最终评论中 mention 编排 Agent，指明 UX Audit、交叉一致性、固定候选和 PASS/FAIL 路径。
+- 只有关键视觉方向或产品交互存在必须由人选择的方案时才标记“需要人工操作：是”；普通设计审核由独立 Audit完成。
 - 不实现生产 UI，不把自身 Issue 设为 `done`。
 
 ## 输出
@@ -65,4 +67,4 @@ Figma 工具不可用时可以先完成 Markdown 规格；Issue 明确要求 Fig
 4. Figma 或替代规格位置；
 5. PRD/架构一致性；
 6. 开发/QA 验收清单；
-7. 风险、未决项和下一门禁。
+7. 风险、未决项、下一门禁、编排 Agent mention 和是否需要人工操作。

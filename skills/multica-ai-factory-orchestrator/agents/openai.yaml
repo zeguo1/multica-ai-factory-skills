@@ -1,4 +1,4 @@
 interface:
   display_name: "Multica AI 软件工厂编排"
-  short_description: "协调受治理的 Multica Issue、依赖门禁与阶段推进"
-  default_prompt: "使用 $multica-ai-factory-orchestrator 对该请求分类，并协调受治理的 Multica Issue 交接。"
+  short_description: "协调 Multica Issue、自治接棒、依赖门禁与阶段推进"
+  default_prompt: "使用 $multica-ai-factory-orchestrator 对该请求分类，并在已启用自治模式时协调到整条 Issue 链完成。"

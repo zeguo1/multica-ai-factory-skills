@@ -1,6 +1,6 @@
 ---
 name: multica-ai-factory-execution
-description: 执行 Multica 中已分配且就绪的开发 Issue，处理代码、配置、数据库迁移、测试、实现文档或 PR。核对已批准基线和仓库规则，证明真实操作路径，实施最小完整范围，完成自测并关联证据与候选 Commit/PR，最后停在 in_review。不得执行独立 QA 或审计，不得用关闭意图绕过门禁，不得改变产品范围、合并、发布或把自己的 Issue 设为 done。
+description: 执行 Multica 中已分配且就绪的开发 Issue，处理代码、配置、数据库迁移、测试、实现文档或 PR。核对批准基线和仓库规则，实施最小完整范围，完成自测并固定候选 Commit/PR，最后停在 in_review；自治模式下 mention 编排 Agent 自动并行启动 QA 与 Code Audit。不得执行独立 QA 或审计、绕过门禁、改变产品范围、合并、发布或把自己的 Issue 设为 done。
 ---
 
 # Multica AI 软件工厂开发执行
@@ -15,6 +15,7 @@ description: 执行 Multica 中已分配且就绪的开发 Issue，处理代码�
 4. 检查仓库、分支/worktree、目标基线和未提交变更，保护用户已有修改。
 5. 核对任务类型为 `Development`、状态为 `todo`、G3、依赖、验收和资源。
 6. 就绪条件成立时设为 `in_progress`；否则记录阻塞并设为 `blocked`。
+7. 读取“自动推进”章节；`autonomous` 模式必须能够识别协调父 Issue 和编排 Agent。
 
 `todo` 不代表平台已经验证依赖。修改代码前按 Issue 正文逐项核验所有 `hard` 依赖、必需状态/版本和满足证据；不得自行豁免、解除依赖、提升状态或把 `cancelled` 当作 `done`。
 
@@ -62,11 +63,12 @@ G4 前不使用 `Closes`、`Fixes` 或 `Resolves` 加 Issue key，避免 PR 合�
 
 ## 交付
 
-- 记录修改文件、行为、候选 Commit/PR、命令和逐项结果。
+- 记录修改文件、行为、固定候选 Commit/PR、命令和逐项结果。
 - 映射验收标准—测试—证据。
 - 说明迁移、回滚、风险和未验证范围。
-- 将开发 Issue 设为 `in_review`。
-- 指明独立 QA 与代码审计。
+- 先发布最终交付评论，再将开发 Issue 设为 `in_review`。
+- `autonomous` 模式在最终评论中 mention 编排 Agent，要求针对同一候选并行启动独立 QA 与 Code Audit，并写明 PASS/FAIL 路径和是否需要人工操作。
+- 普通代码评审、QA 和审计不标记需要人工操作；只有业务范围、数据/合规、重大风险或破坏性授权未决时才请求人。
 - 不把自身 Issue 设为 `done`。
 
 ## 输出
@@ -78,4 +80,4 @@ G4 前不使用 `Closes`、`Fixes` 或 `Resolves` 加 Issue key，避免 PR 合�
 5. PR/Commit；
 6. 迁移、回滚和风险；
 7. 未验证项；
-8. 当前状态与下一门禁。
+8. 当前状态、下一门禁、编排 Agent mention 和是否需要人工操作。

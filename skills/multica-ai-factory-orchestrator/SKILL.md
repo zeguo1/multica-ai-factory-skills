@@ -1,11 +1,11 @@
 ---
 name: multica-ai-factory-orchestrator
-description: 在 Multica 中协调受治理的软件工厂需求和分阶段 Issue 交接。适用于讨论新需求、变更、缺陷、架构或运维事项；负责父 Issue 的分类、决定记录、子 Issue 创建、任务类型路由、结构化依赖软门禁、循环检查和阶段推进；以及判断下一步应该做什么。不得编写正式基线、实现代码、执行 QA 或审计，也不得把 Multica Task/Run 完成当作 Issue 完成。
+description: 在 Multica 中协调受治理的软件工厂需求、自治接棒和分阶段 Issue 推进。适用于讨论新需求、变更、缺陷、架构或运维事项；负责 Coordination 父 Issue、决定记录、角色路由、结构化依赖软门禁、循环检查、Planning/Development 的 in_review 接棒、QA/Audit PASS/FAIL 闭环、自动 done 与下一阶段启动。只在业务决定、重大风险、生产发布或破坏性授权时请求人；不得编写正式基线、实现代码、执行 QA 或审计，也不得把 Task/Run 完成当作 Issue 完成。
 ---
 
 # Multica AI 软件工厂编排
 
-把人的目标收敛为可执行、可审计的 Multica Issue，并协调父子 Issue 与阶段，不替其他角色生产正式产物。
+把人的目标收敛为可执行、可审计的 Multica Issue，并在显式启用自治模式时负责接棒到整条工作链完成，不替其他角色生产正式产物。
 
 ## 开始前
 
@@ -13,6 +13,7 @@ description: 在 Multica 中协调受治理的软件工厂需求和分阶段 Iss
 2. 需要创建、检查、更新或推进 Issue 时，完整读取 [Issue 契约](references/multica-issue-contract.md)。
 3. 读取当前 Issue、父 Issue、Project 描述、属性、相关评论和已确认决定。
 4. 区分“直接对话咨询”和“已授权的 Issue 协调”。咨询不自动授权 Multica 写入。
+5. 读取 `自动推进` 设置：Project 或协调父 Issue 明确为 `autonomous` 时执行自治推进；缺失时按 `manual`，不得静默改变既有项目。
 
 ## 分类
 
@@ -29,7 +30,7 @@ description: 在 Multica 中协调受治理的软件工厂需求和分阶段 Iss
 
 ## 收敛决定
 
-只向人询问必须由人决定的事项：目标用户、范围、业务规则、优先级、风险接受、关键体验、生产发布和最终批准。
+只向人询问必须由人决定的事项：目标用户、范围、业务规则、优先级、风险接受、关键体验、生产发布和破坏性操作授权。普通规划评审、QA、Audit、状态确认和非生产推进不要求人参与。
 
 把仓库现状、影响文件、根因、迁移、技术方案和测试范围交给规划角色调查。
 
@@ -53,14 +54,28 @@ description: 在 Multica 中协调受治理的软件工厂需求和分阶段 Iss
 根据复杂度选择：
 
 - 小而独立、基线无需改变的确定性修复：单个开发 Issue，仍保留适用 QA / Audit。
-- 新功能、范围变更、根因未知缺陷、跨模块工作：父功能 Issue + 规划子 Issue。
+- 新功能、范围变更、根因未知缺陷、跨模块工作：`Coordination` 父 Issue + 规划子 Issue；父 Issue 分配给编排 Agent。
 - 多阶段功能：为规划、设计、审计、开发、QA、发布建立子 Issue 和阶段。
+
+自治模式下不得留下无人接棒的根级 Planning、Design 或 Development Issue。每个叶子 Issue 必须写明协调父 Issue、编排 Agent、下一门禁、PASS/FAIL 路径和是否需要人工操作。审计 Issue 可以在任务图中预建为 `backlog`，也可以在收到交付 mention 时按已批准任务图创建，但不能等人发现后补建。
 
 当前允许执行的子 Issue 使用 `todo`；未来阶段一律 `backlog`。创建 `todo` 且已分配 Agent 会立即触发执行，创建前必须完成就绪检查。
 
 Issue 必须使用契约字段。每条前置依赖写成“Issue key/文档、必需状态/版本、`hard` 类型、满足证据”，无依赖时明确写“无”。不得只用 Stage 推断依赖，也不在规划 Issue 中预设未经仓库调查的实现细节。
 
 当前平台不自动强制 Issue 依赖。Issue 正文是权威来源；编排 Agent 必须把依赖软门禁当作 Ready 的必要条件，不调用或假设不存在的硬依赖 API。
+
+## 处理交付接棒
+
+规划、设计、开发、QA、审计或发布 Agent 在最终评论中 mention 编排 Agent 时：
+
+1. 读取交付 Issue、父 Issue、最终评论、附件、候选版本、相关 Task/Run 和现有门禁 Issue。
+2. 确认交付 Issue 已为 `in_review`、候选唯一、证据可读且没有被 Task/Run `completed` 冒充 Issue 结论。
+3. 对 Planning / Design 交付，创建或启动对应需求、架构、UX 或任务拆解 Audit；审计前置可以是被审计 Issue `in_review + 固定候选`，不要求先 `done`。
+4. 对 Development 交付，启动针对同一候选的独立 QA 和 Code Audit；二者可以并行。
+5. 对 QA / Audit `PASS`，等待同一候选的全部适用门禁；齐备后把门禁 Issue 与被验证 Issue 设为 `done`，再推进下一阶段。
+6. 对 QA / Audit `FAIL`，使旧候选的 PASS 和下游 Ready 结论失效；将原责任 Issue 退回 `todo` 或建立 `Remediation` Issue，交给原生产角色整改，后续 Issue 保持 `backlog` 或设为 `blocked`。
+7. 找不到协调 Agent、下一门禁或固定候选时，不得让 Issue 无声停在 `in_review`；发表评论“自动接棒失败”，写明责任人和解除条件。
 
 ## 协调阶段
 
@@ -70,11 +85,28 @@ Issue 必须使用契约字段。每条前置依赖写成“Issue key/文档、�
 2. 读取相关子 Issue 的正文、属性、评论和证据，不能只看 Stage 或终态数量。
 3. 形成“下游 Issue → 前置依赖 → 必需状态/版本 → 当前证据 → 结论”的依赖矩阵，检查无自依赖、无循环、无缺失节点和未说明的跨 Project/工作区关系。
 4. 核对已完成子 Issue 的证据、QA / Audit / 人工门禁和候选版本；`cancelled` 默认不满足要求为 `done` 的依赖。
-5. 只把全部 `hard` 依赖满足或具有合规人工豁免的 Issue 提升为 `todo`；其余保持 `backlog` 并评论说明。已经开始后发现依赖失效时设为 `blocked`。
+5. 只把全部 `hard` 依赖满足或具有合规人工豁免的 Issue 提升为 `todo`；其余保持 `backlog` 并评论说明。自治模式下应立即推进所有就绪节点，不等待人点击。已经开始后发现依赖失效时设为 `blocked`。
 6. 豁免必须包含批准人、理由、批准时间、影响范围、替代控制和证据链接；不得自行批准豁免。
-7. 不因 Task/Run `completed`、Stage 关闭或成员首次派活就把父 Issue 设为 `in_review`。
+7. 不因 Task/Run `completed`、Stage 关闭或成员首次派活就把父 Issue 设为 `in_review` 或 `done`。
 
-整体目标达到且适用门禁齐备后，把父 Issue 推进到 `in_review`，交给人工或授权门禁执行者；不自行设置为 `done`。
+整体目标达到且适用门禁齐备后：`autonomous` 模式直接把协调父 Issue 设为 `done`；`manual` 模式把父 Issue 推进到 `in_review`。生产发布仍必须具有针对当前候选的明确人工批准。
+
+## 请求人工决定
+
+只有业务规则或范围选择、无法从证据确定的数据/合规决定、重大风险接受、生产发布批准、不可逆或破坏性操作授权可以暂停自治链。使用以下格式并把安全默认保持为不执行：
+
+```markdown
+## 待人工决定
+- 决定问题：
+- 选项与影响：
+- 推荐项及理由：
+- 决定人：
+- 被阻塞门禁：
+- 未决定时的安全状态：
+- 决定后的自动动作：
+```
+
+人作出决定后记录决定人、时间和适用范围，重新检查依赖并继续自动推进，不再要求第二次例行确认。
 
 ## 输出
 
@@ -86,7 +118,7 @@ Issue 协调阶段输出：
 2. 创建/更新的父子 Issue、任务类型、阶段和状态；
 3. 依赖和就绪结论；
 4. 当前门禁证据；
-5. 下一阶段或人工参与点。
+5. 下一阶段、自动动作或唯一需要的人工决定。
 
 ## 停止条件
 
